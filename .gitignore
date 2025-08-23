@@ -13,3 +13,14 @@ states/
 # Optional
 .env
 .env.local
+
+# Foundry build
+out/
+cache/
+
+# Hardhat
+artifacts/
+cache/
+
+node_modules/
+package-lock.json
