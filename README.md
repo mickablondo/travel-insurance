@@ -1,3 +1,8 @@
+## 🚧 Work in Progress
+
+This project is currently under construction.  
+Features and documentation are being actively developed, so expect frequent updates and changes.
+
 ## Foundry
 
 **Foundry is a blazing fast, portable and modular toolkit for Ethereum application development written in Rust.**
