@@ -1,7 +1,12 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
+/// @title Travel Insurancd management contract
+/// @notice This interface shows how to interact with the Smart Contract.
+/// @author Micka Blondo
 interface ITravelInsurance {
+
+    /// @notice Enum des différents types d'assurance proposées
     enum InsuranceType { FULL, HALF, CUSTOM }
 
     struct Policy {
