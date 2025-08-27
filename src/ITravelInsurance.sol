@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.13;
+pragma solidity ^0.8.30;
 
 /// @title Travel Insurancd management contract
 /// @notice This interface shows how to interact with the Smart Contract.
