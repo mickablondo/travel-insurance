@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.13;
 
-import "./ITravelInsurance.sol";
+import {ITravelInsurance} from "./ITravelInsurance.sol";
 
 contract TravelInsurance is ITravelInsurance {
 
