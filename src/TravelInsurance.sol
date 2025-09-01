@@ -50,6 +50,9 @@ contract TravelInsurance is ITravelInsurance {
         return policyCount;
     }
 
+    /**
+     * @dev See {ITravelInsurance-cancelPolicy}.
+     */
     function cancelPolicy(uint256 policyId) external override {
         Policy storage policy = policies[policyId];
         require(policy.insured == msg.sender, "Only the insured can cancel the policy");
@@ -57,5 +60,12 @@ contract TravelInsurance is ITravelInsurance {
         require(!policy.paidOut, "Policy has already been paid out");
         
         policy.active = false;
+    }
+
+    /**
+     * @dev See {ITravelInsurance-getMyPolicies}.
+     */
+    function getMyPolicies() external view override returns (uint256[] memory) {
+        return policiesByInsured[msg.sender];
     }
 }

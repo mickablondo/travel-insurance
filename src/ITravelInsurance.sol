@@ -43,4 +43,7 @@ interface ITravelInsurance {
 
     /// @notice Annuler une police d’assurance
     function cancelPolicy(uint256 policyId) external;
+
+    /// @notice Récupérer les polices de l'assuré
+    function getMyPolicies() external view returns (uint256[] memory);
 }
