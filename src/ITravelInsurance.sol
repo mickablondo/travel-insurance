@@ -40,4 +40,7 @@ interface ITravelInsurance {
 
     /// @notice Nombre total de polices
     function getPolicyCount() external view returns (uint256);
+
+    /// @notice Annuler une police d’assurance
+    function cancelPolicy(uint256 policyId) external;
 }

@@ -49,4 +49,13 @@ contract TravelInsurance is ITravelInsurance {
     function getPolicyCount() external view override returns (uint256) {
         return policyCount;
     }
+
+    function cancelPolicy(uint256 policyId) external override {
+        Policy storage policy = policies[policyId];
+        require(policy.insured == msg.sender, "Only the insured can cancel the policy");
+        require(policy.active, "Policy is not active");
+        require(!policy.paidOut, "Policy has already been paid out");
+        
+        policy.active = false;
+    }
 }
