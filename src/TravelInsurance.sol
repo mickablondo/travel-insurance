@@ -22,10 +22,27 @@ contract TravelInsurance is ITravelInsurance {
         uint256 departureTime,
         InsuranceType insuranceType
     ) external payable override {
+        // vérifications
         require(msg.value > 0, "Premium must be paid");
         require(uint(insuranceType) <= uint(type(InsuranceType).max), "Invalid type");
+        require(bytes(flightNumber).length > 0, "Flight number is required");
+        require(departureTime > block.timestamp, "Departure time must be in the future");
 
-        // Implementation here
+        // création de la police d'assurance
+        Policy memory newPolicy = Policy({
+            insured: msg.sender,
+            flightNumber: flightNumber,
+            departureTime: departureTime,
+            premiumPaid: msg.value,
+            insType: insuranceType,
+            payoutAmount: 0, // doit-on le calculer ici ?
+            active: true,
+            paidOut: false
+        });
+
+        // stockage de la police
+        policies[policyCount] = newPolicy;
+        policiesByInsured[msg.sender].push(policyCount);
         policyCount++;
     }
 
