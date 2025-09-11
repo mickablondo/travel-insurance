@@ -2,8 +2,12 @@
 pragma solidity ^0.8.30;
 
 import {ITravelInsurance} from "./ITravelInsurance.sol";
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 
-contract TravelInsurance is ITravelInsurance {
+contract TravelInsurance is ITravelInsurance, ReentrancyGuard, Ownable {
+
+    constructor() Ownable(msg.sender) {}
 
     /// @notice Stockage des polices d’assurance par ID
     mapping(uint256 => Policy) private policies;
@@ -13,6 +17,27 @@ contract TravelInsurance is ITravelInsurance {
 
     /// @notice Compteur de polices d’assurance
     uint256 private policyCount;
+
+    /// @notice Adresse de l'oracle (à définir)
+    address public oracle;
+
+    /// @notice Modificateur pour restreindre l'accès aux fonctions à l'oracle ou au propriétaire
+    modifier onlyOracleOrOwner() {
+        require(msg.sender == oracle || msg.sender == owner(), "Not authorized");
+        _;
+    }
+
+    /// @notice Modificateur pour vérifier qu'une adresse n'est pas l'adresse zéro
+    modifier notZeroAddress(address addr) {
+        require(addr != address(0), "Invalid address");
+        _;
+    }
+
+    /// @notice Définir l'adresse de l'oracle, seulement pour le propriétaire
+    /// @param _oracle Adresse de l'oracle
+    function setOracle(address _oracle) external onlyOwner notZeroAddress(address(this)) {
+        oracle = _oracle;
+    }
 
     /**
      * @dev See {ITravelInsurance-subscribe}.
@@ -31,11 +56,11 @@ contract TravelInsurance is ITravelInsurance {
         // création de la police d'assurance
         Policy memory newPolicy = Policy({
             insured: msg.sender,
-            flightNumber: flightNumber,
+            flightNumberHash: keccak256(abi.encodePacked(flightNumber)),
             departureTime: departureTime,
             premiumPaid: msg.value,
             insType: insuranceType,
-            payoutAmount: 0, // doit-on le calculer ici ?
+            payoutAmount: 0,
             active: true,
             paidOut: false
         });
@@ -49,7 +74,7 @@ contract TravelInsurance is ITravelInsurance {
     /**
      * @dev See {ITravelInsurance-triggerPayout}.
      */
-    function triggerPayout(uint256 policyId) external override {
+    function triggerPayout(uint256 policyId) external override onlyOracleOrOwner notZeroAddress(address(this)) nonReentrant {
         Policy storage policy = policies[policyId];
         require(policy.active, "Policy is not active");
         require(!policy.paidOut, "Policy has already been paid out");
@@ -74,6 +99,7 @@ contract TravelInsurance is ITravelInsurance {
 
         // Transfert des fonds à l'assuré
         require(payoutAmount > 0, "Payout amount must be greater than zero");
+        require(address(this).balance >= payoutAmount, "Insufficient pool balance");
         payable(policy.insured).transfer(payoutAmount);
     }
 

@@ -11,7 +11,7 @@ interface ITravelInsurance {
 
     struct Policy {
         address insured;
-        string flightNumber;
+        bytes32 flightNumberHash;
         uint256 departureTime;
         uint256 premiumPaid;
         InsuranceType insType;
