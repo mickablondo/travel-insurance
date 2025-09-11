@@ -50,7 +50,31 @@ contract TravelInsurance is ITravelInsurance {
      * @dev See {ITravelInsurance-triggerPayout}.
      */
     function triggerPayout(uint256 policyId) external override {
-        // Implementation here
+        Policy storage policy = policies[policyId];
+        require(policy.active, "Policy is not active");
+        require(!policy.paidOut, "Policy has already been paid out");
+        require(block.timestamp >= policy.departureTime, "Flight has not departed yet");
+        require(policy.insured != address(0), "Invalid insured address");
+        require(policy.insured != address(this), "Cannot transfer to contract itself");
+
+        // TODO : via un oracle, vérifier si le vol a été annulé ou retardé via un oracle
+
+        policy.paidOut = true;
+        policy.active = false;
+
+        uint256 payoutAmount = 0;
+        if(policy.insType == InsuranceType.HALF) {
+            payoutAmount = policy.premiumPaid * 3 / 2;
+        } else if(policy.insType == InsuranceType.FULL) {
+            payoutAmount = policy.premiumPaid * 2;
+        } else {
+            payoutAmount = policy.premiumPaid; // TODO : gérer le cas CUSTOM
+        }
+        policy.payoutAmount = payoutAmount;
+
+        // Transfert des fonds à l'assuré
+        require(payoutAmount > 0, "Payout amount must be greater than zero");
+        payable(policy.insured).transfer(payoutAmount);
     }
 
     /**
