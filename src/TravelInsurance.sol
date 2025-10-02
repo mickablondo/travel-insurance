@@ -20,6 +20,7 @@ contract TravelInsurance is ITravelInsurance, ReentrancyGuard, Ownable {
 
     /// @notice Adresse de l'oracle (à définir)
     address public oracle;
+// utiliser chainlink : import "@chainlink/contracts/src/v0.8/ChainlinkClient.sol";
 
     /// @notice Modificateur pour restreindre l'accès aux fonctions à l'oracle ou au propriétaire
     modifier onlyOracleOrOwner() {
